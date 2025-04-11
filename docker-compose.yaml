@@ -1,0 +1,27 @@
+services:
+  php-apache:
+    build: ./build/php
+    ports:
+      - "80:80"
+    depends_on:
+      - MariaDB
+    volumes:
+      - ./pages:/var/www/html
+      - ./config/vhosts.conf:/etc/apache2/sites-enabled/000-default.conf
+  MariaDB:
+    image: mariadb:11.3
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: ${MARIADB_ALLOW_EMPTY_ROOT_PASSWORD}
+    volumes:
+      - ./databases:/var/lib/mysql
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "${PHPMYADMIN_PORT}:80"
+    depends_on:
+      - MariaDB
+    environment:
+      PMA_HOST: MariaDB
+      PMA_USER: ${PHPMYADMIN_USER}
+      PMA_PASSWORD: ${PHPMYADMIN_PASSWORD}
